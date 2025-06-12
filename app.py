@@ -21,15 +21,36 @@ st.title("📊 SharePoint workbook viewer")
 load_btn = st.button("Load workbook")
 
 @st.cache_data(show_spinner="Downloading & parsing workbook…")
+@st.cache_data(show_spinner="Downloading & parsing workbook…")
 def fetch_sheet():
-    ctx   = ClientContext(SITE_URL).with_credentials(UserCredential(USERNAME, PASSWORD))
-    sp_file = ctx.web.get_file_by_id(FILE_ID)
+    # ------------- 0. Basic validation
+    if not all([SITE_URL, USERNAME, PASSWORD]):
+        raise ValueError("SITE_URL / USERNAME / PASSWORD must be provided")
+
+    # ------------- 1. Connect
+    ctx = ClientContext(SITE_URL).with_credentials(UserCredential(USERNAME, PASSWORD))
+
+    # ------------- 2. Download (try GUID first, then path)
     buf = io.BytesIO()
-    sp_file.download(buf).execute_query()
+    try:
+        ctx.web.get_file_by_id(FILE_ID).download(buf).execute_query()
+    except Exception as guid_err:
+        # Fallback: assume the file lives in the default "Documents" library
+        rel_url = f"/personal/eflores_dismac_com_bo/Documents/{FILE_NAME}"
+        try:
+            ctx.web.get_file_by_server_relative_url(rel_url).download(buf).execute_query()
+        except Exception as path_err:
+            raise RuntimeError(
+                f"GUID lookup failed ({guid_err}) *and* path lookup failed ({path_err})."
+            ) from None
+
+    if buf.tell() == 0:
+        raise RuntimeError("Downloaded file is 0 bytes – check FILE_ID / permissions.")
+
+    # ------------- 3. Parse Excel
     buf.seek(0)
     df = pd.read_excel(buf, sheet_name=SHEET_NAME, header=1, engine="openpyxl")
-    cols = ['ORDEN DE COMPRA', 'REGIONAL', 'PROVEEDOR', 'ESTADO']
-    return df[cols]
+    return df[['ORDEN DE COMPRA', 'REGIONAL', 'PROVEEDOR', 'ESTADO']]
 
 if load_btn:
     try:
