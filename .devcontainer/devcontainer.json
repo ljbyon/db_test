@@ -17,7 +17,7 @@
     "SP_FILE_NAME":  "Seguimiento_Pedidos_Longtail_Mejorado.xlsm",
     "SP_SHEET_NAME": "Marketplace 25",
     "SP_USERNAME":   "ljbyon@dismac.com.bo",
-    "SP_PASSWORD":   "${{ secrets.SP_PASSWORD }}"
+    "SP_PASSWORD":   "${{ secrets.M365_SHAREPOINT }}"
   },
 
   // (Optional) open the browser automatically when the port is forwarded
