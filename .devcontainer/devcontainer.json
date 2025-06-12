@@ -1,8 +1,27 @@
-"containerEnv": {
-  "SP_SITE_URL":   "https://dismatecbo-my.sharepoint.com/…",
-  "SP_FILE_ID":    "CFDB8B6F-03FB-422B-BB83-9C99CDF217DA",
-  "SP_FILE_NAME":  "Seguimiento_Pedidos_Longtail_Mejorado.xlsm",
-  "SP_SHEET_NAME": "Marketplace 25",
-  "SP_USERNAME":   "ljbyon@dismac.com.bo",
-  "SP_PASSWORD":   "${{ secrets.SP_PASSWORD }}"
+{
+  "name": "Python 3.12 + Streamlit",
+
+  // 1 — Use the Python 3.12 image (works with Office 365 client)
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+
+  // 2 — Automatically install your Python dependencies right after the container is built
+  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+
+  // 3 — Forward Streamlit’s default port so Codespaces opens it for you
+  "forwardPorts": [8501],
+
+  // 4 — Inject SharePoint credentials as environment variables
+  "containerEnv": {
+    "SP_SITE_URL":   "https://dismatecbo-my.sharepoint.com/personal/eflores_dismac_com_bo",
+    "SP_FILE_ID":    "CFDB8B6F-03FB-422B-BB83-9C99CDF217DA",
+    "SP_FILE_NAME":  "Seguimiento_Pedidos_Longtail_Mejorado.xlsm",
+    "SP_SHEET_NAME": "Marketplace 25",
+    "SP_USERNAME":   "ljbyon@dismac.com.bo",
+    "SP_PASSWORD":   "${{ secrets.SP_PASSWORD }}"
+  },
+
+  // (Optional) open the browser automatically when the port is forwarded
+  "portsAttributes": {
+    "8501": { "label": "Streamlit app", "onAutoForward": "openBrowser" }
+  }
 }
