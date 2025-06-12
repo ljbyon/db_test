@@ -16,12 +16,17 @@ SHEET_NAME = os.getenv("SP_SHEET_NAME", st.secrets.get("SP_SHEET_NAME", "Marketp
 USERNAME   = os.getenv("SP_USERNAME",   st.secrets.get("SP_USERNAME",   ""))
 PASSWORD   = os.getenv("SP_PASSWORD",   st.secrets.get("SP_PASSWORD",   ""))
 
-missing = [k for k in ("SP_SITE_URL", "SP_FILE_ID", "SP_USERNAME", "SP_PASSWORD")
-           if not locals()[k]]
+required = {
+    "SP_SITE_URL": SITE_URL,
+    "SP_FILE_ID":  FILE_ID,
+    "SP_USERNAME": USERNAME,
+    "SP_PASSWORD": PASSWORD,
+}
+
+missing = [k for k, v in required.items() if not v]
 if missing:
     st.error(f"🔒 The following secrets / env-vars are missing: {', '.join(missing)}")
     st.stop()
-
 # ─────────────────────────────────────────────────────────────
 # 2. Cached download & parse
 # ─────────────────────────────────────────────────────────────
