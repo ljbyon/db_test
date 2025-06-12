@@ -32,20 +32,24 @@ if missing:
 # ─────────────────────────────────────────────────────────────
 @st.cache_data(show_spinner="Downloading & parsing workbook…")
 def fetch_sheet():
-    ctx = ClientContext(SITE_URL).with_credentials(UserCredential(USERNAME, PASSWORD))
+    ctx = ClientContext(SITE_URL).with_credentials(
+        UserCredential(USERNAME, PASSWORD)
+    )
+
     buf = io.BytesIO()
-    try:
-        ctx.web.get_file_by_id(FILE_ID).download(buf).execute_query(request_timeout=30)
-    except Exception:          # GUID failed → fallback to path
+
+    try:                                        # ① try GUID first
+        ctx.web.get_file_by_id(FILE_ID).download(buf).execute_query()
+    except Exception:                           # ② fall back to server-relative path
         rel = f"/personal/{USERNAME.split('@')[0]}/Documents/{FILE_NAME}"
-        ctx.web.get_file_by_server_relative_url(rel).download(buf).execute_query(request_timeout=30)
+        ctx.web.get_file_by_server_relative_url(rel).download(buf).execute_query()
+
     if buf.tell() == 0:
-        raise RuntimeError("Downloaded file is empty — check FILE_ID / permissions.")
+        raise RuntimeError("Downloaded file is empty – check FILE_ID / permissions.")
+
     buf.seek(0)
     df = pd.read_excel(buf, sheet_name=SHEET_NAME, header=1, engine="openpyxl")
-    keep = ['ORDEN DE COMPRA', 'REGIONAL', 'PROVEEDOR', 'ESTADO']
-    df = df[keep].dropna(how="all")        # tidy up blank trailing rows
-    return df
+    return df[['ORDEN DE COMPRA', 'REGIONAL', 'PROVEEDOR', 'ESTADO']]
 
 # ─────────────────────────────────────────────────────────────
 # 3. UI
