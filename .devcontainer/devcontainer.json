@@ -1,7 +1,8 @@
-{
-  "name": "streamlit-codespace",
-  "image": "mcr.microsoft.com/devcontainers/python:3.12",
-  "forwardPorts": [8501],
-  "postCreateCommand": "pip install -r requirements.txt",
-  "postAttachCommand": "streamlit run app.py --server.port 8501 --server.address 0.0.0.0"
+"containerEnv": {
+  "SP_SITE_URL":   "https://dismatecbo-my.sharepoint.com/…",
+  "SP_FILE_ID":    "CFDB8B6F-03FB-422B-BB83-9C99CDF217DA",
+  "SP_FILE_NAME":  "Seguimiento_Pedidos_Longtail_Mejorado.xlsm",
+  "SP_SHEET_NAME": "Marketplace 25",
+  "SP_USERNAME":   "ljbyon@dismac.com.bo",
+  "SP_PASSWORD":   "${{ secrets.SP_PASSWORD }}"
 }
