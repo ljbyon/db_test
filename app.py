@@ -16,5 +16,9 @@ SHEET_NAME = os.getenv("SP_SHEET_NAME", st.secrets.get("sp_sheet_name", "Marketp
 USERNAME   = os.getenv("SP_USERNAME",   st.secrets.get("sp_username",   ""))
 PASSWORD   = os.getenv("SP_PASSWORD",   st.secrets.get("sp_password",   ""))
 
-for k in ("SP_SITE_URL","SP_FILE_ID","SP_USERNAME","SP_PASSWORD"):
-    assert os.getenv(k, st.secrets.get(k.lower(),"")), f"{k} is missing"
+missing = [k for k in ("SP_SITE_URL", "SP_FILE_ID", "SP_USERNAME", "SP_PASSWORD")
+           if not os.getenv(k) and not st.secrets.get(k.lower(), "")]
+
+if missing:
+    st.error(f"The following secrets / env-vars are not set: {', '.join(missing)}")
+    st.stop()
